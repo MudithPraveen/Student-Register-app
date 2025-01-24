@@ -9,18 +9,18 @@ export default function ViewStu() {
     <View style={styles.container}>
       <Text style={styles.title}>View Students</Text>
       {/* Table Header */}
-      <View style={styles.tableRow}>
-        <Text style={[styles.tableHeader, styles.tableCell]}>Register Number</Text>
-        <Text style={[styles.tableHeader, styles.tableCell]}>Name</Text>
+      <View style={styles.tr}>
+        <Text style={styles.th}>Register Number</Text>
+        <Text style={styles.th}>Name</Text>
       </View>
       {/* Table Body */}
       <FlatList
         data={students}
         keyExtractor={(item) => item.rgno}
         renderItem={({ item }) => (
-          <View style={styles.tableRow}>
-            <Text style={[styles.tableCell, styles.tableData]}>{item.rgno}</Text>
-            <Text style={[styles.tableCell, styles.tableData]}>{item.name}</Text>
+          <View style={styles.tr}>
+            <Text style={styles.td}>{item.rgno}</Text>
+            <Text style={styles.td}>{item.name}</Text>
           </View>
         )}
       />
@@ -42,22 +42,21 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
-  tableRow: {
+  tr: {
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
     paddingVertical: 8,
   },
-  tableHeader: {
+  th: {
+    flex: 1,
     fontWeight: 'bold',
     fontSize: 16,
-  },
-  tableCell: {
-    flex: 1,
-    textAlign: 'center',
     padding: 5,
   },
-  tableData: {
+  td: {
+    flex: 1,
     fontSize: 14,
+    padding: 5,
   },
 });

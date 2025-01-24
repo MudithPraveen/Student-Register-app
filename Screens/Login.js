@@ -1,15 +1,20 @@
 import { Alert,TextInput,Button,View,Text, StyleSheet } from 'react-native';
-import {useState} from 'react';
-
+import {useState,useContext} from 'react';
+import { CounterContext } from './CounterProvider';
 
 export default function Login({navigation}) {
   const [username,setUn] = useState('');
   const [password,setPw] = useState('');
+  const { users } = useContext(CounterContext);
 
   function handleLogin(){
+    const userCheck = users.find(
+      (item) => item.un === username && item.pw === password
+    )
+
     if(username && password){
       if(password.length >= 6){
-        if(username === '2018ICTS75' && password === 'TS4068'){
+        if(userCheck){
           navigation.navigate('Home');
         }
         else{
@@ -29,7 +34,7 @@ export default function Login({navigation}) {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput 
-        placeholder="User Name" 
+        placeholder="Username" 
         style={styles.input}
         value={username}
         onChangeText={setUn}

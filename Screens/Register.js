@@ -1,14 +1,51 @@
-import { TextInput,Button,View,Text, StyleSheet } from 'react-native';
+import { Alert,TextInput,Button,View,Text, StyleSheet } from 'react-native';
+import {useContext,useState} from 'react';
+import { CounterContext } from './CounterProvider';
 
 
-export default function Login({navigation}) {
+export default function Register({navigation}) {
+  const [un,setUn] = useState('');
+  const [email,setEmail] = useState('');
+  const [pw,setPw] = useState('');
+  const { addUsers } = useContext(CounterContext);
+
+  function handleReg(){
+    if(un && email && pw){
+    addUsers(un,email,pw);
+    setUn('');
+    setPw('');
+    setEmail('');
+    navigation.navigate('Login')
+    }
+    else{
+      Alert.alert('Enter User Details!');
+    }
+  }
+  
+
   return (
     <View  style={styles.container}>
       <Text  style={styles.title}>Register</Text>
-       <TextInput placeholder="User Name" style={styles.input}/>
-       <TextInput placeholder="Email" style={styles.input}/>
-       <TextInput placeholder="Password" secureTextEntry style={styles.input}/>
-      <Button title="Register" onPress={() => navigation.navigate('Login')} />
+       <TextInput 
+        placeholder="Username" 
+        style={styles.input}
+        value = {un}
+        onChangeText = {setUn}
+       />
+       <TextInput 
+        placeholder="Email" 
+        style={styles.input}
+        value = {email}
+        onChangeText = {setEmail}
+        />
+       <TextInput 
+       placeholder="Password" 
+       secureTextEntry 
+       style={styles.input}
+       value = {pw}
+       onChangeText = {setPw}
+       />
+      <Button title="Register" onPress={handleReg} />
     </View>
   );
 }
