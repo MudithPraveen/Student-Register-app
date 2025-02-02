@@ -1,58 +1,71 @@
-import { Alert,TextInput,Button,View,Text, StyleSheet } from 'react-native';
+import { ScrollView,Alert,TextInput,Button,View,Text, StyleSheet } from 'react-native';
 import {useState,useContext} from 'react';
 import { CounterContext } from './CounterProvider';
+import {useForm,Controller} from 'react-hook-form'
 
 export default function Login({navigation}) {
-  const [username,setUn] = useState('');
-  const [password,setPw] = useState('');
   const { users } = useContext(CounterContext);
+  const {control,handleSubmit,formState:{ errors }} = useForm();
 
-  function handleLogin(){
+  function handleLogin(data){
     const userCheck = users.find(
-      (item) => item.un === username && item.pw === password
+      (item) => item.un === data.username && item.pw === data.password
     )
 
-    if(username && password){
-      if(password.length >= 6){
-        if(userCheck){
-          navigation.navigate('Home');
-        }
-        else{
-          Alert.alert('Username or Password is incorrect!!');
-        }
-      }
-      else{
-        Alert.alert('Password must be at least 6 Characters!!');
-      }
+    if(userCheck){
+      navigation.navigate('Home');
     }
     else{
-      Alert.alert('Enter Username and Password!!');
+      Alert.alert('User name or password incorrect!')
     }
   }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-      <TextInput 
-        placeholder="Username" 
-        style={styles.input}
-        value={username}
-        onChangeText={setUn}
+
+      <Controller
+        name = "username"
+        control = {control}
+        rules = {{required:"User name required!"}}
+        render = {({ field: {onChange, value  } })=>(
+          <TextInput 
+            placeholder = "Username"
+            style = {styles.input}
+            value = {value}
+            onChangeText = {onChange}
+          />
+        )}
       />
-      <TextInput 
-        placeholder="Password" 
-        secureTextEntry 
-        style={styles.input}
-        value={password}
-        onChangeText={setPw}
+      {errors.username && <Text style = {styles.error}> {errors.username.message} </Text>}
+
+      <Controller 
+        name = "password"
+        control = {control}
+        rules = {{required:"Password required!", minLength:{value: 6 ,message:"Password must be at least 6 characters"}}}
+        render = {({ field: { value , onChange } })=>(
+          <TextInput
+            placeholder = "Password"
+            style = {styles.input}
+            value = {value}
+            onChangeText = {onChange}
+          />
+        )}
       />
-      <Button title='Sign In' onPress={handleLogin} />  
+      {errors.password && <Text style = {styles.error} > {errors.password.message} </Text>}
+
+      <Button title='Sign In' onPress={handleSubmit(handleLogin)} />  
+
       <Button color='lightblue' title="Go to Sign Up" onPress={() => navigation.navigate('Register')} />
     </View>
   );
 }
 /*onPress={() => navigation.replace('TabNav')}*/ 
 const styles = StyleSheet.create({
+  error:{
+    color: 'red',
+    marginBottom: 5,
+  },
   container: {
     flex: 1,
      justifyContent: 'center',

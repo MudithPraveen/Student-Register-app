@@ -1,56 +1,78 @@
 import { Alert,TextInput,Button,View,Text, StyleSheet } from 'react-native';
 import {useContext,useState} from 'react';
 import { CounterContext } from './CounterProvider';
+import {Controller,useForm} from 'react-hook-form'
 
 
 export default function Register({navigation}) {
-  const [un,setUn] = useState('');
-  const [email,setEmail] = useState('');
-  const [pw,setPw] = useState('');
   const { addUsers } = useContext(CounterContext);
+  const { control,handleSubmit,formState:{errors}} = useForm();
 
-  function handleReg(){
-    if(un && email && pw){
-    addUsers(un,email,pw);
-    setUn('');
-    setPw('');
-    setEmail('');
+  function handleReg(data){
+    addUsers(data.username,data.email,data.password);
     navigation.navigate('Login')
-    }
-    else{
-      Alert.alert('Enter User Details!');
-    }
   }
   
-
   return (
     <View  style={styles.container}>
       <Text  style={styles.title}>Register</Text>
-       <TextInput 
-        placeholder="Username" 
-        style={styles.input}
-        value = {un}
-        onChangeText = {setUn}
-       />
-       <TextInput 
-        placeholder="Email" 
-        style={styles.input}
-        value = {email}
-        onChangeText = {setEmail}
-        />
-       <TextInput 
-       placeholder="Password" 
-       secureTextEntry 
-       style={styles.input}
-       value = {pw}
-       onChangeText = {setPw}
-       />
-      <Button title="Register" onPress={handleReg} />
+
+      <Controller 
+        name = "username"
+        control = {control}
+        rules = {{required:"username required!"}}
+        render = {({field:{onChange,value}}) => (
+          <TextInput 
+            placeholder = "username"
+            value = {value}
+            onChangeText = {onChange}
+            style={styles.input}
+          />
+        )}
+      />
+      {errors.username && <Text style={styles.error}>{errors.username.message}</Text>}
+
+      <Controller 
+        name = "email"
+        control = {control}
+        rules = {{required:"Email required!" ,pattern:{ value:/^\S+@\S+\.\S+$/ , message:"Invalid email format!" }}}
+        render = {({field:{onChange,value}})=>(
+          <TextInput
+            placeholder = "Email"
+            value = {value}
+            onChangeText = {onChange}
+            style = {styles.input}
+          />
+        )}
+      />
+      {errors.email && <Text style = {styles.error}>{errors.email.message}</Text>}
+
+      <Controller 
+        name = "password"
+        control = {control}
+        rules = {{required:"password required!" ,minLength :{value:6 ,message:"Password must be at least 6 characters"}}}
+        render = {({field:{onChange,value}})=>(
+          <TextInput
+            placeholder = "password"
+            value = {value}
+            onChangeText = {onChange}
+            secureTextEntry
+            style = {styles.input}
+          />
+        )}
+      />
+      {errors.password && <Text style = {styles.error}>{errors.password.message}</Text>}
+
+      <Button title="Register" onPress={handleSubmit(handleReg)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  error:{
+    color: 'red',
+    marginBottom: 5,
+  },
   container: {
     flex: 1,
      justifyContent: 'center',
